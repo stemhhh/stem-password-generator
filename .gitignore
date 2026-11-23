@@ -10,3 +10,11 @@ node_modules/
 *.msix
 .vs/
 artifacts/
+dist/
+build/
+.release/
+release/win-unpacked/
+*.appx
+TestResults/
+.wrangler/
+.DS_Store
