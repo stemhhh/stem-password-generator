@@ -1,0 +1,15 @@
+<UserControl
+    x:Class="StemPasswordGenerator.Views.MasterKeyboardView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <UserControl.Resources>
+        <Style x:Key="MasterShiftOnStyle" TargetType="Button" BasedOn="{StaticResource AccentButtonStyle}" />
+    </UserControl.Resources>
+    <Border
+        HorizontalAlignment="Stretch"
+        Padding="8,10"
+        CornerRadius="12"
+        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}">
+        <StackPanel x:Name="KeyRows" Spacing="8" />
+    </Border>
+</UserControl>

@@ -1,0 +1,51 @@
+{
+  "manifest_version": 3,
+  "name": "Stem Password Generator",
+  "version": "1.9.46",
+  "description": "Stem extension: fill and save logins on this PC. Never over HTTP. No cloud.",
+  "minimum_chrome_version": "116",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "stem-password-generator@stem.local",
+      "strict_min_version": "115.0"
+    }
+  },
+  "action": {
+    "default_title": "Stem extension",
+    "default_popup": "popup.html"
+  },
+  "permissions": ["activeTab", "nativeMessaging", "storage", "scripting", "alarms", "clipboardWrite", "offscreen"],
+  "host_permissions": [
+    "https://*/*",
+    "http://localhost/*",
+    "http://127.0.0.1/*",
+    "http://[::1]/*"
+  ],
+  "optional_host_permissions": ["http://*/*"],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*/*",
+        "http://localhost/*",
+        "http://127.0.0.1/*",
+        "http://[::1]/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_idle",
+      "all_frames": true
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "commands": {
+    "assist-login": {
+      "suggested_key": { "default": "Ctrl+Shift+L" },
+      "description": "Fill this login with Stem"
+    }
+  },
+  "icons": {
+    "48": "icon48.png",
+    "128": "icon128.png"
+  }
+}

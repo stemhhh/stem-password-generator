@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Stem</title>
+  <style>
+    body { font: 13px/1.45 "Segoe UI", sans-serif; margin: 0; width: 320px; background: #101820; color: #e8eef7; }
+    main { padding: 12px; display: grid; gap: 8px; }
+    h1 { font-size: 14px; margin: 0; }
+    p, button { margin: 0; }
+    button { background: #0a58ca; color: #fff; border: 0; border-radius: 8px; padding: 8px 10px; cursor: pointer; text-align: left; }
+    button.secondary { background: #243044; }
+    button.pick { background: #1b2d48; white-space: pre-wrap; }
+    #status { color: #9aa8bc; white-space: pre-wrap; }
+    #badge { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; }
+    #badge.locked { color: #ff8a80; }
+    #badge.open { color: #6ccb5f; }
+    #badge.disconnected { color: #ffcc66; }
+    #matches { display: grid; gap: 6px; }
+    #confirm-save { display: none; grid-gap: 8px; }
+    #confirm-save.show { display: grid; }
+    .hint { color: #9aa8bc; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Stem Password Generator</h1>
+    <p id="badge">…</p>
+    <p id="status">Checking this page…</p>
+    <div id="matches"></div>
+    <button id="login">Sign in on this site</button>
+    <button id="save" class="secondary">Save this login</button>
+    <p id="save-hint" class="hint"></p>
+    <div id="confirm-save">
+      <p id="confirm-text" class="hint"></p>
+      <button id="confirm-save-yes">Save in vault</button>
+      <button id="confirm-save-no" class="secondary">Cancel</button>
+    </div>
+    <button id="signup" class="secondary">Create an account on this site</button>
+    <button id="alias" class="secondary">Use a Stem email alias</button>
+    <button id="allow" class="secondary">Allow Stem on this site</button>
+  </main>
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+**/bin/
+**/obj/
+**/AppPackages/
+*.user
+*.suo
+*.log
+*.pfx
+node_modules/
+*.exe
+*.msix
+.vs/
+artifacts/

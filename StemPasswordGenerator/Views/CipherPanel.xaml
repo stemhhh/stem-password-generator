@@ -1,0 +1,286 @@
+<UserControl
+    x:Class="StemPasswordGenerator.Views.CipherPanel"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:views="using:StemPasswordGenerator.Views">
+
+    <UserControl.Resources>
+        <views:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+        <views:BoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter" Invert="True" />
+    </UserControl.Resources>
+
+    <Grid>
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="CipherLayoutStates">
+                <VisualState x:Name="CipherWideLayout">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="900" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="SourcePanel.(Grid.Column)" Value="0" />
+                        <Setter Target="SourcePanel.(Grid.Row)" Value="0" />
+                        <Setter Target="SourcePanel.(Grid.ColumnSpan)" Value="1" />
+                        <Setter Target="SourcePanel.(Grid.RowSpan)" Value="3" />
+                        <Setter Target="SwapButton.(Grid.Column)" Value="1" />
+                        <Setter Target="SwapButton.(Grid.Row)" Value="0" />
+                        <Setter Target="SwapButton.(Grid.ColumnSpan)" Value="1" />
+                        <Setter Target="SwapButton.(Grid.RowSpan)" Value="3" />
+                        <Setter Target="SwapButton.HorizontalAlignment" Value="Center" />
+                        <Setter Target="SwapButton.VerticalAlignment" Value="Top" />
+                        <Setter Target="SwapButton.Margin" Value="8,10,8,0" />
+                        <Setter Target="ResultPanel.(Grid.Column)" Value="2" />
+                        <Setter Target="ResultPanel.(Grid.Row)" Value="0" />
+                        <Setter Target="ResultPanel.(Grid.ColumnSpan)" Value="1" />
+                        <Setter Target="ResultPanel.(Grid.RowSpan)" Value="3" />
+                    </VisualState.Setters>
+                </VisualState>
+                <VisualState x:Name="CipherCompactLayout">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="0" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="SourcePanel.(Grid.Column)" Value="0" />
+                        <Setter Target="SourcePanel.(Grid.Row)" Value="0" />
+                        <Setter Target="SourcePanel.(Grid.ColumnSpan)" Value="3" />
+                        <Setter Target="SourcePanel.(Grid.RowSpan)" Value="1" />
+                        <Setter Target="SwapButton.(Grid.Column)" Value="0" />
+                        <Setter Target="SwapButton.(Grid.Row)" Value="1" />
+                        <Setter Target="SwapButton.(Grid.ColumnSpan)" Value="3" />
+                        <Setter Target="SwapButton.(Grid.RowSpan)" Value="1" />
+                        <Setter Target="SwapButton.HorizontalAlignment" Value="Center" />
+                        <Setter Target="SwapButton.VerticalAlignment" Value="Center" />
+                        <Setter Target="SwapButton.Margin" Value="0,4" />
+                        <Setter Target="ResultPanel.(Grid.Column)" Value="0" />
+                        <Setter Target="ResultPanel.(Grid.Row)" Value="2" />
+                        <Setter Target="ResultPanel.(Grid.ColumnSpan)" Value="3" />
+                        <Setter Target="ResultPanel.(Grid.RowSpan)" Value="1" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+
+        <ScrollViewer views:FluidPage.Enable="True" Padding="24,18,28,24">
+            <StackPanel Spacing="16">
+                <StackPanel Spacing="6" MaxWidth="{StaticResource ReadableTextWidth}" HorizontalAlignment="Left">
+                    <TextBlock Text="{Binding [CipherTitle], Source={StaticResource Loc}}" Style="{StaticResource SectionTitleStyle}" />
+                    <TextBlock
+                        Text="{Binding [CipherIntro], Source={StaticResource Loc}}"
+                        Style="{StaticResource SecondaryTextStyle}"
+                        TextWrapping="Wrap" />
+                </StackPanel>
+
+                <Grid ColumnSpacing="16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <RadioButtons
+                        Header="{Binding [CipherAlgorithmHeader], Source={StaticResource Loc}}"
+                        MaxColumns="2"
+                        SelectedIndex="{Binding AlgorithmIndex, Mode=TwoWay}">
+                        <RadioButton Content="{Binding [CipherAlgAes], Source={StaticResource Loc}}" />
+                        <RadioButton Content="{Binding [CipherAlgChaCha], Source={StaticResource Loc}}" />
+                    </RadioButtons>
+                    <RadioButtons
+                        Grid.Column="1"
+                        Header="{Binding [CipherLanguageHeader], Source={StaticResource Loc}}"
+                        MaxColumns="3"
+                        SelectedIndex="{Binding LanguageIndex, Mode=TwoWay}">
+                        <RadioButton Content="{Binding [CipherLangBase64], Source={StaticResource Loc}}" />
+                        <RadioButton Content="{Binding [CipherLangHex], Source={StaticResource Loc}}" />
+                        <RadioButton Content="{Binding [CipherLangBinary], Source={StaticResource Loc}}" />
+                    </RadioButtons>
+                </Grid>
+
+                <StackPanel Spacing="8" MaxWidth="520">
+                    <PasswordBox
+                        x:Name="CipherPasswordBox"
+                        Header="{Binding [CipherPasswordHeader], Source={StaticResource Loc}}"
+                        PasswordRevealMode="Peek"
+                        PasswordChanged="CipherPasswordBox_PasswordChanged" />
+                    <TextBlock
+                        Text="{Binding PasswordHint}"
+                        Style="{StaticResource CaptionTextStyle}"
+                        TextWrapping="Wrap"
+                        Foreground="{ThemeResource SystemFillColorCriticalBrush}" />
+                    <PasswordBox
+                        x:Name="CipherConfirmBox"
+                        Header="{Binding [CipherConfirmHeader], Source={StaticResource Loc}}"
+                        PasswordRevealMode="Peek"
+                        Visibility="{Binding IsEncryptMode, Converter={StaticResource BoolToVisibilityConverter}}"
+                        PasswordChanged="CipherConfirmBox_PasswordChanged" />
+                    <TextBlock
+                        Text="{Binding ConfirmHint}"
+                        Style="{StaticResource CaptionTextStyle}"
+                        TextWrapping="Wrap"
+                        Foreground="{ThemeResource SystemFillColorCriticalBrush}" />
+                </StackPanel>
+
+                <Grid x:Name="Board" ColumnSpacing="0" RowSpacing="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <Border
+                        x:Name="SourcePanel"
+                        Grid.Column="0"
+                        Grid.Row="0"
+                        Grid.RowSpan="3"
+                        MinHeight="280"
+                        Padding="16,12,16,10"
+                        CornerRadius="{StaticResource CardCornerRadius}"
+                        Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1">
+                        <Grid RowSpacing="8">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Grid ColumnSpacing="8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock
+                                    Text="{Binding SourceTitle}"
+                                    Style="{StaticResource CardTitleStyle}"
+                                    VerticalAlignment="Center" />
+                                <Button
+                                    Grid.Column="1"
+                                    Command="{Binding ClearSourceCommand}"
+                                    Style="{StaticResource IconButtonStyle}"
+                                    AutomationProperties.Name="{Binding [Clear], Source={StaticResource Loc}}"
+                                    ToolTipService.ToolTip="{Binding [Clear], Source={StaticResource Loc}}">
+                                    <FontIcon FontFamily="Segoe Fluent Icons" FontSize="14" Glyph="&#xE711;" />
+                                </Button>
+                            </Grid>
+                            <TextBox
+                                Grid.Row="1"
+                                Text="{Binding SourceText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                PlaceholderText="{Binding SourcePlaceholder}"
+                                AcceptsReturn="True"
+                                TextWrapping="Wrap"
+                                BorderThickness="0"
+                                Background="Transparent"
+                                Padding="0"
+                                MinHeight="180"
+                                IsSpellCheckEnabled="False"
+                                IsTextPredictionEnabled="False"
+                                FontSize="18"
+                                FontFamily="Cascadia Mono, Consolas"
+                                ScrollViewer.VerticalScrollBarVisibility="Auto" />
+                            <Button
+                                Grid.Row="2"
+                                HorizontalAlignment="Left"
+                                Command="{Binding CopySourceCommand}"
+                                Style="{StaticResource IconButtonStyle}"
+                                AutomationProperties.Name="{Binding [CipherCopySource], Source={StaticResource Loc}}"
+                                ToolTipService.ToolTip="{Binding [CipherCopySource], Source={StaticResource Loc}}">
+                                <FontIcon FontFamily="Segoe Fluent Icons" FontSize="16" Glyph="&#xE8C8;" />
+                            </Button>
+                        </Grid>
+                    </Border>
+
+                    <Button
+                        x:Name="SwapButton"
+                        Grid.Column="1"
+                        Grid.Row="0"
+                        Grid.RowSpan="3"
+                        Margin="8,10,8,0"
+                        VerticalAlignment="Top"
+                        Command="{Binding SwapCommand}"
+                        Style="{StaticResource IconButtonStyle}"
+                        AutomationProperties.Name="{Binding [CipherSwap], Source={StaticResource Loc}}"
+                        ToolTipService.ToolTip="{Binding [CipherSwap], Source={StaticResource Loc}}">
+                        <FontIcon FontFamily="Segoe Fluent Icons" FontSize="16" Glyph="&#xE8AB;" />
+                    </Button>
+
+                    <Border
+                        x:Name="ResultPanel"
+                        Grid.Column="2"
+                        Grid.Row="0"
+                        Grid.RowSpan="3"
+                        MinHeight="280"
+                        Padding="16,12,16,10"
+                        CornerRadius="{StaticResource CardCornerRadius}"
+                        Background="{ThemeResource SubtleFillColorSecondaryBrush}"
+                        BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1">
+                        <Grid RowSpacing="8">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <TextBlock
+                                Text="{Binding ResultTitle}"
+                                Style="{StaticResource CardTitleStyle}"
+                                VerticalAlignment="Center" />
+                            <TextBox
+                                Grid.Row="1"
+                                Text="{Binding ResultText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                PlaceholderText="{Binding ResultPlaceholder}"
+                                AcceptsReturn="True"
+                                TextWrapping="Wrap"
+                                IsReadOnly="True"
+                                BorderThickness="0"
+                                Background="Transparent"
+                                Padding="0"
+                                MinHeight="180"
+                                IsSpellCheckEnabled="False"
+                                IsTextPredictionEnabled="False"
+                                FontSize="18"
+                                FontFamily="Cascadia Mono, Consolas"
+                                ScrollViewer.VerticalScrollBarVisibility="Auto" />
+                            <Button
+                                Grid.Row="2"
+                                HorizontalAlignment="Left"
+                                Command="{Binding CopyResultCommand}"
+                                Style="{StaticResource IconButtonStyle}"
+                                AutomationProperties.Name="{Binding [CipherCopyResult], Source={StaticResource Loc}}"
+                                ToolTipService.ToolTip="{Binding [CipherCopyResult], Source={StaticResource Loc}}">
+                                <FontIcon FontFamily="Segoe Fluent Icons" FontSize="16" Glyph="&#xE8C8;" />
+                            </Button>
+                        </Grid>
+                    </Border>
+                </Grid>
+
+                <Grid MaxWidth="420">
+                    <Button
+                        Content="{Binding RunLabel}"
+                        Command="{Binding RunCommand}"
+                        Style="{ThemeResource AccentButtonStyle}"
+                        HorizontalAlignment="Stretch"
+                        MinHeight="40" />
+                    <ProgressRing
+                        IsActive="{Binding IsBusy}"
+                        IsHitTestVisible="False"
+                        Width="22"
+                        Height="22"
+                        Margin="0,0,14,0"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center" />
+                </Grid>
+                <TextBlock
+                    MinHeight="18"
+                    Text="{Binding Status}"
+                    Style="{StaticResource SecondaryTextStyle}"
+                    TextWrapping="Wrap" />
+                <HyperlinkButton
+                    Content="{Binding [CipherClearAll], Source={StaticResource Loc}}"
+                    Command="{Binding ClearCommand}"
+                    Padding="0"
+                    HorizontalAlignment="Left" />
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>

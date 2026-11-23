@@ -1,0 +1,759 @@
+<Window
+    x:Class="StemPasswordGenerator.Views.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:views="using:StemPasswordGenerator.Views"
+    mc:Ignorable="d"
+    Title="Stem Password Generator">
+
+    <Window.SystemBackdrop>
+        <MicaBackdrop Kind="Base" />
+    </Window.SystemBackdrop>
+
+    <Grid x:Name="Root" Background="Transparent" UseLayoutRounding="True" AllowDrop="True" KeyboardAcceleratorPlacementMode="Hidden" DragOver="Root_DragOver" DragLeave="Root_DragLeave" Drop="Root_Drop">
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroup x:Name="WindowSizeStates">
+                <VisualState x:Name="WideLayout">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="640" />
+                    </VisualState.StateTriggers>
+                </VisualState>
+                <VisualState x:Name="CompactLayout">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="0" />
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="ContentRoot.Padding" Value="16,12,16,16" />
+                        <Setter Target="PasswordTextBox.(Grid.ColumnSpan)" Value="2" />
+                        <Setter Target="CopyButton.(Grid.Row)" Value="1" />
+                        <Setter Target="CopyButton.(Grid.Column)" Value="0" />
+                        <Setter Target="CopyButton.(Grid.ColumnSpan)" Value="2" />
+                        <Setter Target="CopyButton.HorizontalAlignment" Value="Stretch" />
+                        <Setter Target="UppercaseCheckBox.(Grid.ColumnSpan)" Value="2" />
+                        <Setter Target="LowercaseCheckBox.(Grid.Row)" Value="1" />
+                        <Setter Target="LowercaseCheckBox.(Grid.Column)" Value="0" />
+                        <Setter Target="LowercaseCheckBox.(Grid.ColumnSpan)" Value="2" />
+                        <Setter Target="NumbersCheckBox.(Grid.Row)" Value="2" />
+                        <Setter Target="NumbersCheckBox.(Grid.ColumnSpan)" Value="2" />
+                        <Setter Target="SymbolsCheckBox.(Grid.Row)" Value="3" />
+                        <Setter Target="SymbolsCheckBox.(Grid.Column)" Value="0" />
+                        <Setter Target="SymbolsCheckBox.(Grid.ColumnSpan)" Value="2" />
+                        <Setter Target="AmbiguousCheckBox.(Grid.Row)" Value="4" />
+                    </VisualState.Setters>
+                </VisualState>
+            </VisualStateGroup>
+        </VisualStateManager.VisualStateGroups>
+        <Grid.Resources>
+            <views:PasswordStrengthLabelFontWeightConverter x:Key="PasswordStrengthLabelFontWeightConverter" />
+            <views:StringToOpacityConverter x:Key="StringToOpacityConverter" />
+            <views:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+            <views:BoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter" Invert="True" />
+
+            <views:PasswordStrengthBrushConverter x:Key="PasswordStrengthBrushConverter" />
+            <views:PasswordStrengthSegmentBrushConverter x:Key="PasswordStrengthSegmentBrushConverter" />
+        </Grid.Resources>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <TitleBar
+            x:Name="AppTitleBar"
+            Title="Stem Password Generator"
+            Subtitle="Local generator and encrypted vault">
+            <TitleBar.IconSource>
+                <ImageIconSource ImageSource="ms-appx:///Assets/Square44x44Logo.png" />
+            </TitleBar.IconSource>
+        </TitleBar>
+
+        <NavigationView
+            x:Name="ShellNav"
+            Grid.Row="1"
+            IsBackButtonVisible="Collapsed"
+            IsSettingsVisible="False"
+            OpenPaneLength="196"
+            CompactModeThresholdWidth="720"
+            ExpandedModeThresholdWidth="1100"
+            SelectionChanged="ShellNav_SelectionChanged">
+            <NavigationView.MenuItems>
+                <NavigationViewItem x:Name="GenerateNavItem" Content="Generate" Tag="generate">
+                    <NavigationViewItem.Icon>
+                        <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE72C;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem x:Name="CheckNavItem" Content="Check" Tag="check">
+                    <NavigationViewItem.Icon>
+                        <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE8F1;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem x:Name="CipherNavItem" Content="Cipher" Tag="cipher">
+                    <NavigationViewItem.Icon>
+                        <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE192;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem x:Name="VaultNavItem" Content="Vault" Tag="vault" SelectsOnInvoked="True" IsExpanded="True">
+                    <NavigationViewItem.Icon>
+                        <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE72E;" />
+                    </NavigationViewItem.Icon>
+                    <NavigationViewItem.MenuItems>
+                        <NavigationViewItem x:Name="VaultItemsNavItem" Content="Items" Tag="vault">
+                            <NavigationViewItem.Icon>
+                                <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE8A5;" />
+                            </NavigationViewItem.Icon>
+                        </NavigationViewItem>
+                        <NavigationViewItem x:Name="VaultMediaNavItem" Content="Multimedia vault" Tag="vault-media-photo" SelectsOnInvoked="True" IsExpanded="True">
+                            <NavigationViewItem.Icon>
+                                <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE91B;" />
+                            </NavigationViewItem.Icon>
+                            <NavigationViewItem.MenuItems>
+                                <NavigationViewItem x:Name="VaultMediaPhotosNavItem" Content="Photos" Tag="vault-media-photo">
+                                    <NavigationViewItem.Icon>
+                                        <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE91B;" />
+                                    </NavigationViewItem.Icon>
+                                </NavigationViewItem>
+                                <NavigationViewItem x:Name="VaultMediaVideosNavItem" Content="Videos" Tag="vault-media-video">
+                                    <NavigationViewItem.Icon>
+                                        <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE714;" />
+                                    </NavigationViewItem.Icon>
+                                </NavigationViewItem>
+                                <NavigationViewItem x:Name="VaultMediaAudioNavItem" Content="Audio" Tag="vault-media-audio">
+                                    <NavigationViewItem.Icon>
+                                        <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE8D6;" />
+                                    </NavigationViewItem.Icon>
+                                </NavigationViewItem>
+                                <NavigationViewItem x:Name="VaultMediaFilesNavItem" Content="Files" Tag="vault-media-file">
+                                    <NavigationViewItem.Icon>
+                                        <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE8A5;" />
+                                    </NavigationViewItem.Icon>
+                                </NavigationViewItem>
+                            </NavigationViewItem.MenuItems>
+                        </NavigationViewItem>
+                        <NavigationViewItem x:Name="VaultActivityNavItem" Content="Activity" Tag="vault-activity">
+                            <NavigationViewItem.Icon>
+                                <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE81C;" />
+                            </NavigationViewItem.Icon>
+                        </NavigationViewItem>
+                    </NavigationViewItem.MenuItems>
+                </NavigationViewItem>
+                <NavigationViewItem x:Name="ProtectNavItem" Content="Protect" Tag="protect">
+                    <NavigationViewItem.Icon>
+                        <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xEA18;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem x:Name="UsbNavItem" Content="USB key" Tag="usb">
+                    <NavigationViewItem.Icon>
+                        <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE88E;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+            </NavigationView.MenuItems>
+            <NavigationView.FooterMenuItems>
+                <NavigationViewItem x:Name="SettingsNavItem" Content="Settings" Tag="settings">
+                    <NavigationViewItem.Icon>
+                        <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE713;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+                <NavigationViewItem x:Name="AboutNavItem" Content="About" Tag="about">
+                    <NavigationViewItem.Icon>
+                        <FontIcon FontFamily="Segoe Fluent Icons" Glyph="&#xE946;" />
+                    </NavigationViewItem.Icon>
+                </NavigationViewItem>
+            </NavigationView.FooterMenuItems>
+
+            <Grid>
+                <ScrollViewer
+                    x:Name="MainScrollViewer"
+                    HorizontalScrollBarVisibility="Disabled"
+                    HorizontalScrollMode="Disabled"
+                    VerticalScrollBarVisibility="Auto"
+                    VerticalScrollMode="Enabled"
+                    IsTabStop="False">
+            <Grid
+                x:Name="ContentRoot"
+                Padding="{StaticResource PagePadding}"
+                UseLayoutRounding="True"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Top"
+                ColumnSpacing="16"
+                RowSpacing="16"
+                SizeChanged="ContentRoot_SizeChanged">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" MinWidth="0" />
+                    <ColumnDefinition Width="*" MinWidth="0" />
+                    <ColumnDefinition Width="*" MinWidth="0" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <Border x:Name="OutputSection" Style="{StaticResource CardBorderStyle}" Grid.ColumnSpan="3">
+                    <StackPanel Spacing="16">
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="{Binding [YourSecret], Source={StaticResource Loc}}" Style="{StaticResource SectionTitleStyle}" />
+                            <TextBlock
+                                Text="{Binding [YourSecretHint], Source={StaticResource Loc}}"
+                                Style="{StaticResource SecondaryTextStyle}"
+                                TextWrapping="Wrap" />
+                            <TextBlock
+                                Text="{Binding CharacterCountLabel}"
+                                Style="{StaticResource CaptionTextStyle}" />
+                        </StackPanel>
+
+                        <Grid x:Name="PasswordRow" ColumnSpacing="10" RowSpacing="10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <TextBox
+                                x:Name="PasswordTextBox"
+                                AutomationProperties.Name="{Binding [GeneratedPassword], Source={StaticResource Loc}}"
+                                MinHeight="56"
+                                Padding="14,12"
+                                Text="{Binding Password, Mode=OneWay}"
+                                IsReadOnly="True"
+                                PlaceholderText="{Binding [GeneratedPassword], Source={StaticResource Loc}}"
+                                FontFamily="Cascadia Mono, Consolas"
+                                FontSize="18"
+                                CornerRadius="{StaticResource ControlCornerRadius}"
+                                TextWrapping="NoWrap"
+                                AcceptsReturn="False"
+                                UseSystemFocusVisuals="True"
+                                ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                                ScrollViewer.HorizontalScrollMode="Enabled"
+                                ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                                ScrollViewer.VerticalScrollMode="Disabled" />
+                            <Button
+                                x:Name="CopyButton"
+                                Grid.Column="1"
+                                MinWidth="108"
+                                MinHeight="56"
+                                Padding="16,8"
+                                AutomationProperties.Name="{Binding [CopyGeneratedSecret], Source={StaticResource Loc}}"
+                                Command="{Binding CopyPasswordCommand}"
+                                KeyboardAcceleratorPlacementMode="Hidden"
+                                ToolTipService.ToolTip="{Binding [CopyShortcut], Source={StaticResource Loc}}"
+                                UseSystemFocusVisuals="True">
+                                <Button.KeyboardAccelerators>
+                                    <KeyboardAccelerator Key="C" Modifiers="Control,Shift" />
+                                </Button.KeyboardAccelerators>
+                                <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
+                                    <FontIcon
+                                        FontFamily="Segoe Fluent Icons"
+                                        FontSize="16"
+                                        Glyph="&#xE8C8;" />
+                                    <TextBlock Text="{Binding [Copy], Source={StaticResource Loc}}" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </Button>
+                        </Grid>
+
+                        <StackPanel
+                            Orientation="Horizontal"
+                            Spacing="6"
+                            MinHeight="20"
+                            Opacity="{Binding CopyStatusMessage, Converter={StaticResource StringToOpacityConverter}}"
+                            AutomationProperties.LiveSetting="Polite">
+                            <FontIcon
+                                FontFamily="Segoe Fluent Icons"
+                                FontSize="13"
+                                Foreground="{ThemeResource SystemFillColorSuccessBrush}"
+                                Glyph="&#xE73E;" />
+                            <TextBlock
+                                Text="{Binding CopyStatusMessage}"
+                                Style="{StaticResource CaptionTextStyle}"
+                                Foreground="{ThemeResource SystemFillColorSuccessBrush}" />
+                        </StackPanel>
+
+                        <StackPanel
+                            x:Name="StrengthSection"
+                            AutomationProperties.Name="{Binding StrengthLabel}"
+                            AutomationProperties.HelpText="{Binding StrengthDescription}"
+                            AutomationProperties.LiveSetting="Polite"
+                            Spacing="8">
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock Text="{Binding [Strength], Source={StaticResource Loc}}" Style="{StaticResource CardTitleStyle}" />
+                                <TextBlock
+                                    Grid.Column="1"
+                                    Text="{Binding StrengthLabel}"
+                                    Style="{StaticResource CardTitleStyle}"
+                                    Foreground="{Binding Strength, Converter={StaticResource PasswordStrengthBrushConverter}}" />
+                            </Grid>
+
+                            <Grid ColumnSpacing="6" Height="8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <Border
+                                    CornerRadius="4"
+                                    Background="{Binding Strength, Converter={StaticResource PasswordStrengthSegmentBrushConverter}, ConverterParameter=1}" />
+                                <Border
+                                    Grid.Column="1"
+                                    CornerRadius="4"
+                                    Background="{Binding Strength, Converter={StaticResource PasswordStrengthSegmentBrushConverter}, ConverterParameter=2}" />
+                                <Border
+                                    Grid.Column="2"
+                                    CornerRadius="4"
+                                    Background="{Binding Strength, Converter={StaticResource PasswordStrengthSegmentBrushConverter}, ConverterParameter=3}" />
+                                <Border
+                                    Grid.Column="3"
+                                    CornerRadius="4"
+                                    Background="{Binding Strength, Converter={StaticResource PasswordStrengthSegmentBrushConverter}, ConverterParameter=4}" />
+                            </Grid>
+
+                            <Grid ColumnSpacing="8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <TextBlock
+                                    Text="{Binding [Weak], Source={StaticResource Loc}}"
+                                    Style="{StaticResource StrengthCaptionStyle}"
+                                    FontWeight="{Binding Strength, Converter={StaticResource PasswordStrengthLabelFontWeightConverter}, ConverterParameter=Weak}"
+                                    Foreground="{Binding Strength, Converter={StaticResource PasswordStrengthBrushConverter}, ConverterParameter=Weak}" />
+                                <TextBlock
+                                    Grid.Column="1"
+                                    Text="{Binding [Medium], Source={StaticResource Loc}}"
+                                    Style="{StaticResource StrengthCaptionStyle}"
+                                    FontWeight="{Binding Strength, Converter={StaticResource PasswordStrengthLabelFontWeightConverter}, ConverterParameter=Medium}"
+                                    Foreground="{Binding Strength, Converter={StaticResource PasswordStrengthBrushConverter}, ConverterParameter=Medium}" />
+                                <TextBlock
+                                    Grid.Column="2"
+                                    Text="{Binding [Strong], Source={StaticResource Loc}}"
+                                    Style="{StaticResource StrengthCaptionStyle}"
+                                    FontWeight="{Binding Strength, Converter={StaticResource PasswordStrengthLabelFontWeightConverter}, ConverterParameter=Strong}"
+                                    Foreground="{Binding Strength, Converter={StaticResource PasswordStrengthBrushConverter}, ConverterParameter=Strong}" />
+                                <TextBlock
+                                    Grid.Column="3"
+                                    Text="{Binding [Excellent], Source={StaticResource Loc}}"
+                                    Style="{StaticResource StrengthCaptionStyle}"
+                                    FontWeight="{Binding Strength, Converter={StaticResource PasswordStrengthLabelFontWeightConverter}, ConverterParameter=Excellent}"
+                                    Foreground="{Binding Strength, Converter={StaticResource PasswordStrengthBrushConverter}, ConverterParameter=Excellent}" />
+                            </Grid>
+
+                            <TextBlock
+                                Text="{Binding StrengthDescription}"
+                                Style="{StaticResource SecondaryTextStyle}"
+                                TextWrapping="Wrap" />
+                            <TextBlock
+                                Text="{Binding EntropyLabel}"
+                                Style="{StaticResource CaptionTextStyle}"
+                                TextWrapping="Wrap" />
+                            <TextBlock
+                                Text="{Binding CrackTimeLabel}"
+                                Style="{StaticResource CaptionTextStyle}"
+                                TextWrapping="Wrap" />
+                        </StackPanel>
+
+                        <Border
+                            Padding="12"
+                            CornerRadius="{StaticResource ControlCornerRadius}"
+                            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+                            BorderBrush="{ThemeResource CardStrokeColorDefaultBrush}"
+                            BorderThickness="1"
+                            Visibility="{Binding StudentMode, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <StackPanel Spacing="8">
+                                <TextBlock Text="{Binding [StudentWhyTitle], Source={StaticResource Loc}}" Style="{StaticResource CardTitleStyle}" />
+                                <TextBlock
+                                    Text="{Binding [StudentMode], Source={StaticResource Loc}}"
+                                    Style="{StaticResource CaptionTextStyle}" />
+                                <TextBlock
+                                    Text="{Binding StudentEntropyLine}"
+                                    Style="{StaticResource SecondaryTextStyle}"
+                                    TextWrapping="Wrap" />
+                                <TextBlock
+                                    Text="{Binding StudentVaultLine}"
+                                    Style="{StaticResource SecondaryTextStyle}"
+                                    TextWrapping="Wrap" />
+                                <TextBlock
+                                    Text="{Binding StudentTwoFactorLine}"
+                                    Style="{StaticResource SecondaryTextStyle}"
+                                    TextWrapping="Wrap" />
+                                <TextBlock
+                                    Text="{Binding StudentMasterLine}"
+                                    Style="{StaticResource SecondaryTextStyle}"
+                                    TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
+
+                        <Button
+                            x:Name="GeneratePasswordButton"
+                            Command="{Binding GeneratePasswordCommand}"
+                            Style="{ThemeResource AccentButtonStyle}"
+                            MinHeight="44"
+                            HorizontalAlignment="Stretch"
+                            KeyboardAcceleratorPlacementMode="Hidden"
+                            ToolTipService.ToolTip="{Binding [GenerateShortcut], Source={StaticResource Loc}}"
+                            UseSystemFocusVisuals="True">
+                            <Button.KeyboardAccelerators>
+                                <KeyboardAccelerator Key="G" Modifiers="Control" />
+                            </Button.KeyboardAccelerators>
+                            <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
+                                <FontIcon
+                                    FontFamily="Segoe Fluent Icons"
+                                    FontSize="16"
+                                    Glyph="&#xE72C;" />
+                                <TextBlock Text="{Binding GenerateLabel}" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+                        <Button
+                            HorizontalAlignment="Stretch"
+                            MinHeight="44"
+                            Command="{Binding SaveToVaultCommand}"
+                            ToolTipService.ToolTip="{Binding [SaveToVaultTip], Source={StaticResource Loc}}"
+                            UseSystemFocusVisuals="True">
+                            <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
+                                <FontIcon FontFamily="Segoe Fluent Icons" FontSize="16" Glyph="&#xE72E;" />
+                                <TextBlock Text="{Binding [SaveToVault], Source={StaticResource Loc}}" VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </Border>
+
+                <Border x:Name="OptionsSection" Style="{StaticResource CardBorderStyle}" Grid.Row="1" Grid.ColumnSpan="3">
+                    <StackPanel Spacing="16">
+                        <StackPanel Spacing="4">
+                            <TextBlock Text="{Binding [Options], Source={StaticResource Loc}}" Style="{StaticResource SectionTitleStyle}" />
+                            <TextBlock
+                                Text="{Binding [OptionsHint], Source={StaticResource Loc}}"
+                                Style="{StaticResource SecondaryTextStyle}"
+                                TextWrapping="Wrap" />
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <RadioButton
+                                Content="{Binding [Password], Source={StaticResource Loc}}"
+                                GroupName="GeneratorMode"
+                                MinHeight="40"
+                                IsChecked="{Binding IsPasswordMode, Mode=TwoWay}" />
+                            <RadioButton
+                                Content="{Binding [Passphrase], Source={StaticResource Loc}}"
+                                GroupName="GeneratorMode"
+                                MinHeight="40"
+                                IsChecked="{Binding IsPassphraseMode, Mode=TwoWay}" />
+                            <RadioButton
+                                Content="{Binding [PIN], Source={StaticResource Loc}}"
+                                GroupName="GeneratorMode"
+                                MinHeight="40"
+                                IsChecked="{Binding IsPinMode, Mode=TwoWay}" />
+                        </StackPanel>
+
+                        <Grid ColumnSpacing="8" RowSpacing="8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <Button Content="{Binding [PresetEveryday], Source={StaticResource Loc}}" Style="{StaticResource PresetButtonStyle}" Command="{Binding ApplyPresetCommand}" CommandParameter="Everyday" ToolTipService.ToolTip="{Binding [PresetEverydayTip], Source={StaticResource Loc}}" />
+                            <Button Grid.Column="1" Content="{Binding [PresetStrong], Source={StaticResource Loc}}" Style="{StaticResource PresetButtonStyle}" Command="{Binding ApplyPresetCommand}" CommandParameter="Strong" ToolTipService.ToolTip="{Binding [PresetStrongTip], Source={StaticResource Loc}}" />
+                            <Button Grid.Column="2" Content="{Binding [PresetExtra], Source={StaticResource Loc}}" Style="{StaticResource PresetButtonStyle}" Command="{Binding ApplyPresetCommand}" CommandParameter="Extra" ToolTipService.ToolTip="{Binding [PresetExtraTip], Source={StaticResource Loc}}" />
+                            <Button Grid.Row="1" Content="{Binding [PresetWifi], Source={StaticResource Loc}}" Style="{StaticResource PresetButtonStyle}" Command="{Binding ApplyPresetCommand}" CommandParameter="WiFi" ToolTipService.ToolTip="{Binding [PresetWifiTip], Source={StaticResource Loc}}" />
+                            <Button Grid.Row="1" Grid.Column="1" Content="{Binding [PresetPhrase], Source={StaticResource Loc}}" Style="{StaticResource PresetButtonStyle}" Command="{Binding ApplyPresetCommand}" CommandParameter="Phrase" ToolTipService.ToolTip="{Binding [PresetPhraseTip], Source={StaticResource Loc}}" />
+                            <Button Grid.Row="1" Grid.Column="2" Content="{Binding [PresetPin], Source={StaticResource Loc}}" Style="{StaticResource PresetButtonStyle}" Command="{Binding ApplyPresetCommand}" CommandParameter="PIN" ToolTipService.ToolTip="{Binding [PresetPinTip], Source={StaticResource Loc}}" />
+                        </Grid>
+
+                        <Grid ColumnSpacing="16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Spacing="2" VerticalAlignment="Center">
+                                <TextBlock
+                                    Text="{Binding LengthCaption}"
+                                    Style="{ThemeResource BodyStrongTextBlockStyle}" />
+                                <TextBlock
+                                    Text="{Binding LengthHint}"
+                                    Style="{StaticResource CaptionTextStyle}" />
+                            </StackPanel>
+
+                            <Border
+                                Grid.Column="1"
+                                MinWidth="52"
+                                MinHeight="36"
+                                Padding="12,6"
+                                CornerRadius="{StaticResource ControlCornerRadius}"
+                                Background="{ThemeResource ControlFillColorDefaultBrush}"
+                                BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}"
+                                BorderThickness="1"
+                                VerticalAlignment="Center">
+                                <TextBlock
+                                    Text="{Binding Length}"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Style="{ThemeResource BodyStrongTextBlockStyle}" />
+                            </Border>
+                        </Grid>
+
+                        <Slider
+                            x:Name="LengthSlider"
+                            AutomationProperties.Name="{Binding LengthCaption}"
+                            AutomationProperties.HelpText="{Binding LengthHint}"
+                            Minimum="{Binding MinLength}"
+                            Maximum="{Binding MaxLength}"
+                            StepFrequency="1"
+                            TickFrequency="1"
+                            UseSystemFocusVisuals="True"
+                            Value="{Binding Length, Mode=TwoWay}" />
+
+                        <Grid
+                            x:Name="OptionsGrid"
+                            ColumnSpacing="12"
+                            RowSpacing="4"
+                            Visibility="{Binding ShowCharacterOptions, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <CheckBox
+                                x:Name="UppercaseCheckBox"
+                                Content="{Binding [IncludeUppercase], Source={StaticResource Loc}}"
+                                Style="{StaticResource OptionCheckBoxStyle}"
+                                IsChecked="{Binding IncludeUppercase, Mode=TwoWay}" />
+                            <CheckBox
+                                x:Name="LowercaseCheckBox"
+                                Grid.Column="1"
+                                Content="{Binding [IncludeLowercase], Source={StaticResource Loc}}"
+                                Style="{StaticResource OptionCheckBoxStyle}"
+                                IsChecked="{Binding IncludeLowercase, Mode=TwoWay}" />
+                            <CheckBox
+                                x:Name="NumbersCheckBox"
+                                Grid.Row="1"
+                                Content="{Binding [IncludeNumbers], Source={StaticResource Loc}}"
+                                Style="{StaticResource OptionCheckBoxStyle}"
+                                IsChecked="{Binding IncludeNumbers, Mode=TwoWay}" />
+                            <CheckBox
+                                x:Name="SymbolsCheckBox"
+                                Grid.Row="1"
+                                Grid.Column="1"
+                                Content="{Binding [IncludeSymbols], Source={StaticResource Loc}}"
+                                Style="{StaticResource OptionCheckBoxStyle}"
+                                IsChecked="{Binding IncludeSymbols, Mode=TwoWay}" />
+                            <CheckBox
+                                x:Name="AmbiguousCheckBox"
+                                Grid.Row="2"
+                                Grid.ColumnSpan="2"
+                                Content="{Binding [AvoidAmbiguous], Source={StaticResource Loc}}"
+                                Style="{StaticResource OptionCheckBoxStyle}"
+                                IsChecked="{Binding AvoidAmbiguousCharacters, Mode=TwoWay}" />
+                        </Grid>
+
+                        <StackPanel
+                            Spacing="8"
+                            Visibility="{Binding ShowPassphraseOptions, Converter={StaticResource BoolToVisibilityConverter}}">
+                            <CheckBox
+                                Content="{Binding [CapitalizeWords], Source={StaticResource Loc}}"
+                                Style="{StaticResource OptionCheckBoxStyle}"
+                                IsChecked="{Binding CapitalizeWords, Mode=TwoWay}" />
+                            <CheckBox
+                                Content="{Binding [AppendDigit], Source={StaticResource Loc}}"
+                                Style="{StaticResource OptionCheckBoxStyle}"
+                                IsChecked="{Binding AppendDigit, Mode=TwoWay}" />
+                            <Grid ColumnSpacing="12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <TextBlock
+                                    Text="{Binding [WordSeparator], Source={StaticResource Loc}}"
+                                    Style="{ThemeResource BodyStrongTextBlockStyle}"
+                                    VerticalAlignment="Center" />
+                                <TextBox
+                                    Grid.Column="1"
+                                    Width="56"
+                                    MaxLength="1"
+                                    Text="{Binding WordSeparator, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                    PlaceholderText="-"
+                                    UseSystemFocusVisuals="True" />
+                            </Grid>
+                        </StackPanel>
+
+                        <Expander
+                            Header="{Binding [Advanced], Source={StaticResource Loc}}"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Stretch"
+                            IsExpanded="False">
+                            <StackPanel Spacing="8" Margin="0,8,0,0">
+                                <CheckBox
+                                    Content="{Binding [NoRepeated], Source={StaticResource Loc}}"
+                                    Style="{StaticResource OptionCheckBoxStyle}"
+                                    IsChecked="{Binding NoRepeatedCharacters, Mode=TwoWay}" />
+                                <CheckBox
+                                    Content="{Binding [BeginWithLetter], Source={StaticResource Loc}}"
+                                    Style="{StaticResource OptionCheckBoxStyle}"
+                                    Visibility="{Binding ShowCharacterOptions, Converter={StaticResource BoolToVisibilityConverter}}"
+                                    IsChecked="{Binding BeginWithLetter, Mode=TwoWay}" />
+                                <StackPanel Spacing="4">
+                                    <TextBlock Text="{Binding [ExcludeCharacters], Source={StaticResource Loc}}" Style="{ThemeResource BodyStrongTextBlockStyle}" />
+                                    <TextBox
+                                        PlaceholderText="{Binding [ExcludeExample], Source={StaticResource Loc}}"
+                                        Text="{Binding ExcludeCharacters, Mode=TwoWay}"
+                                        UseSystemFocusVisuals="True" />
+                                </StackPanel>
+                            </StackPanel>
+                        </Expander>
+                    </StackPanel>
+                </Border>
+
+                <Border x:Name="HistorySection" Style="{StaticResource CardBorderStyle}" Grid.Row="2" Grid.ColumnSpan="3">
+                    <Expander
+                        Header="{Binding [ThisSession], Source={StaticResource Loc}}"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Stretch"
+                        IsExpanded="False">
+                        <StackPanel Spacing="10" Margin="0,8,0,0">
+                            <Grid>
+                                <TextBlock
+                                    Text="{Binding [SessionHint], Source={StaticResource Loc}}"
+                                    Style="{StaticResource SecondaryTextStyle}"
+                                    TextWrapping="Wrap"
+                                    Margin="0,0,88,0" />
+                                <Button
+                                    Content="{Binding [Clear], Source={StaticResource Loc}}"
+                                    HorizontalAlignment="Right"
+                                    VerticalAlignment="Top"
+                                    Command="{Binding ClearHistoryCommand}"
+                                    UseSystemFocusVisuals="True" />
+                            </Grid>
+                            <ListView
+                                x:Name="HistoryList"
+                                ItemsSource="{Binding History}"
+                                SelectionMode="None"
+                                IsItemClickEnabled="False"
+                                MaxHeight="220">
+                                <ListView.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid ColumnSpacing="10" Padding="0,4">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <StackPanel Spacing="2">
+                                                <TextBlock
+                                                    Text="{Binding Preview}"
+                                                    FontFamily="Cascadia Mono, Consolas"
+                                                    TextTrimming="CharacterEllipsis" />
+                                                <TextBlock
+                                                    Text="{Binding MetaLabel}"
+                                                    Style="{ThemeResource CaptionTextBlockStyle}"
+                                                    Foreground="{ThemeResource TextFillColorTertiaryBrush}" />
+                                            </StackPanel>
+                                            <Button
+                                                Grid.Column="1"
+                                                Command="{Binding CopyCommand}"
+                                                AutomationProperties.Name="{Binding [CopyThisSecret], Source={StaticResource Loc}}"
+                                                ToolTipService.ToolTip="{Binding [CopyThisSecret], Source={StaticResource Loc}}"
+                                                Style="{StaticResource IconButtonStyle}">
+                                                <FontIcon FontFamily="Segoe Fluent Icons" FontSize="14" Glyph="&#xE8C8;" />
+                                            </Button>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
+                        </StackPanel>
+                    </Expander>
+                </Border>
+            </Grid>
+                </ScrollViewer>
+                <views:VaultPanel x:Name="VaultHost" Visibility="Collapsed" />
+                <views:CheckPanel x:Name="CheckHost" Visibility="Collapsed" />
+                <views:CipherPanel x:Name="CipherHost" Visibility="Collapsed" />
+                <views:ProtectPanel x:Name="ProtectHost" Visibility="Collapsed" />
+                <views:UsbKeyPanel x:Name="UsbHost" Visibility="Collapsed" />
+                <views:SettingsPanel x:Name="SettingsHost" Visibility="Collapsed" />
+                <views:AboutPanel x:Name="AboutHost" Visibility="Collapsed" />
+            </Grid>
+        </NavigationView>
+
+        <Button
+            x:Name="VaultLockBadge"
+            Grid.Row="1"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Bottom"
+            Margin="0,0,16,16"
+            Padding="10,6,12,6"
+            MinWidth="0"
+            MinHeight="32"
+            CornerRadius="18"
+            BorderThickness="1.5"
+            Background="{ThemeResource CardBackgroundFillColorDefaultBrush}"
+            Click="VaultLockBadge_Click"
+            Canvas.ZIndex="8">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <Ellipse
+                    x:Name="VaultLockBadgeDot"
+                    Width="8"
+                    Height="8"
+                    VerticalAlignment="Center" />
+                <FontIcon
+                    x:Name="VaultLockBadgeIcon"
+                    FontFamily="Segoe Fluent Icons"
+                    FontSize="12"
+                    Glyph="&#xE72E;"
+                    VerticalAlignment="Center" />
+                <TextBlock
+                    x:Name="VaultLockBadgeLabel"
+                    FontSize="12"
+                    FontWeight="SemiBold"
+                    VerticalAlignment="Center" />
+            </StackPanel>
+        </Button>
+
+        <Border
+            x:Name="DropOverlay"
+            Grid.RowSpan="2"
+            Visibility="Collapsed"
+            Background="{ThemeResource SmokeFillColorDefaultBrush}"
+            IsHitTestVisible="False">
+            <Border
+                Style="{StaticResource CardBorderStyle}"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                MaxWidth="420"
+                Padding="28">
+                <StackPanel Spacing="8">
+                    <TextBlock
+                        Text="{Binding [DropToSealTitle], Source={StaticResource Loc}}"
+                        Style="{StaticResource SectionTitleStyle}"
+                        HorizontalAlignment="Center" />
+                    <TextBlock
+                        Text="{Binding [DropToSealHint], Source={StaticResource Loc}}"
+                        Style="{StaticResource SecondaryTextStyle}"
+                        TextWrapping="Wrap"
+                        HorizontalAlignment="Center" />
+                </StackPanel>
+            </Border>
+        </Border>
+    </Grid>
+</Window>

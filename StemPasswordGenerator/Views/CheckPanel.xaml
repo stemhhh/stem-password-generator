@@ -1,0 +1,178 @@
+<UserControl
+    x:Class="StemPasswordGenerator.Views.CheckPanel"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:views="using:StemPasswordGenerator.Views">
+
+    <UserControl.Resources>
+        <views:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
+        <views:BoolToVisibilityConverter x:Key="InverseBoolToVisibilityConverter" Invert="True" />
+        <views:PasswordStrengthBrushConverter x:Key="PasswordStrengthBrushConverter" />
+        <views:PasswordStrengthSegmentBrushConverter x:Key="PasswordStrengthSegmentBrushConverter" />
+        <views:PasswordStrengthLabelFontWeightConverter x:Key="PasswordStrengthLabelFontWeightConverter" />
+    </UserControl.Resources>
+
+    <ScrollViewer views:FluidPage.Enable="True" Padding="24,18,28,24">
+        <Grid RowSpacing="16">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+            <StackPanel Spacing="8" MaxWidth="{StaticResource ReadableTextWidth}" HorizontalAlignment="Left">
+            <TextBlock Text="{Binding [CheckTitle], Source={StaticResource Loc}}" Style="{StaticResource SectionTitleStyle}" />
+            <TextBlock
+                Text="{Binding [CheckIntro], Source={StaticResource Loc}}"
+                Style="{StaticResource SecondaryTextStyle}"
+                TextWrapping="Wrap" />
+            </StackPanel>
+            <views:FluidCardPanel Grid.Row="1" MinColumnWidth="360" MaxColumns="3" ColumnSpacing="16" RowSpacing="16">
+
+            <InfoBar
+                IsOpen="True"
+                Severity="Informational"
+                IsClosable="False"
+                Title="{Binding [CheckLocalTitle], Source={StaticResource Loc}}"
+                Message="{Binding [CheckLocalBody], Source={StaticResource Loc}}" />
+
+            <Border Style="{StaticResource CardBorderStyle}">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="{Binding [CheckPasteTitle], Source={StaticResource Loc}}" Style="{StaticResource CardTitleStyle}" />
+                    <PasswordBox
+                        x:Name="CheckPasswordBox"
+                        Header="{Binding [CheckSecretHeader], Source={StaticResource Loc}}"
+                        PasswordRevealMode="Peek"
+                        PasswordChanged="CheckPasswordBox_PasswordChanged" />
+                    <Button
+                        Content="{Binding [Clear], Source={StaticResource Loc}}"
+                        Command="{Binding ClearCheckCommand}"
+                        HorizontalAlignment="Stretch" />
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource CardBorderStyle}">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="{Binding [CheckHibpTitle], Source={StaticResource Loc}}" Style="{StaticResource CardTitleStyle}" />
+                    <TextBlock
+                        Text="{Binding [CheckHibpBody], Source={StaticResource Loc}}"
+                        Style="{StaticResource SecondaryTextStyle}"
+                        TextWrapping="Wrap" />
+                    <Button
+                        Content="{Binding [CheckHibpButton], Source={StaticResource Loc}}"
+                        Command="{Binding CheckHibpCommand}"
+                        HorizontalAlignment="Stretch"
+                        Style="{ThemeResource AccentButtonStyle}" />
+                    <ProgressRing
+                        IsActive="{Binding IsCheckHibpBusy}"
+                        Width="28"
+                        Height="28"
+                        HorizontalAlignment="Left" />
+                    <TextBlock
+                        Text="{Binding CheckHibpStatus}"
+                        Style="{StaticResource SecondaryTextStyle}"
+                        TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
+
+            <Border
+                Style="{StaticResource CardBorderStyle}"
+                Visibility="{Binding HasCheckSecret, Converter={StaticResource InverseBoolToVisibilityConverter}}">
+                <TextBlock
+                    Text="{Binding [CheckEmptyHint], Source={StaticResource Loc}}"
+                    Style="{StaticResource SecondaryTextStyle}"
+                    TextWrapping="Wrap" />
+            </Border>
+
+            <Border
+                Style="{StaticResource CardBorderStyle}"
+                Visibility="{Binding HasCheckSecret, Converter={StaticResource BoolToVisibilityConverter}}">
+                <StackPanel Spacing="12">
+                    <Grid ColumnSpacing="12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{Binding CheckKindLabel}" Style="{StaticResource CardTitleStyle}" />
+                        <TextBlock
+                            Grid.Column="1"
+                            Text="{Binding CheckStrengthLabel}"
+                            Style="{StaticResource CardTitleStyle}"
+                            Foreground="{Binding CheckStrength, Converter={StaticResource PasswordStrengthBrushConverter}}" />
+                    </Grid>
+                    <TextBlock
+                        Text="{Binding [Strength], Source={StaticResource Loc}}"
+                        Style="{StaticResource CaptionTextStyle}" />
+                    <Grid ColumnSpacing="6" Height="8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Border CornerRadius="4" Background="{Binding CheckStrength, Converter={StaticResource PasswordStrengthSegmentBrushConverter}, ConverterParameter=1}" />
+                        <Border Grid.Column="1" CornerRadius="4" Background="{Binding CheckStrength, Converter={StaticResource PasswordStrengthSegmentBrushConverter}, ConverterParameter=2}" />
+                        <Border Grid.Column="2" CornerRadius="4" Background="{Binding CheckStrength, Converter={StaticResource PasswordStrengthSegmentBrushConverter}, ConverterParameter=3}" />
+                        <Border Grid.Column="3" CornerRadius="4" Background="{Binding CheckStrength, Converter={StaticResource PasswordStrengthSegmentBrushConverter}, ConverterParameter=4}" />
+                    </Grid>
+                    <Grid ColumnSpacing="8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{Binding [Weak], Source={StaticResource Loc}}" Style="{StaticResource StrengthCaptionStyle}" FontWeight="{Binding CheckStrength, Converter={StaticResource PasswordStrengthLabelFontWeightConverter}, ConverterParameter=Weak}" Foreground="{Binding CheckStrength, Converter={StaticResource PasswordStrengthBrushConverter}, ConverterParameter=Weak}" />
+                        <TextBlock Grid.Column="1" Text="{Binding [Medium], Source={StaticResource Loc}}" Style="{StaticResource StrengthCaptionStyle}" FontWeight="{Binding CheckStrength, Converter={StaticResource PasswordStrengthLabelFontWeightConverter}, ConverterParameter=Medium}" Foreground="{Binding CheckStrength, Converter={StaticResource PasswordStrengthBrushConverter}, ConverterParameter=Medium}" />
+                        <TextBlock Grid.Column="2" Text="{Binding [Strong], Source={StaticResource Loc}}" Style="{StaticResource StrengthCaptionStyle}" FontWeight="{Binding CheckStrength, Converter={StaticResource PasswordStrengthLabelFontWeightConverter}, ConverterParameter=Strong}" Foreground="{Binding CheckStrength, Converter={StaticResource PasswordStrengthBrushConverter}, ConverterParameter=Strong}" />
+                        <TextBlock Grid.Column="3" Text="{Binding [Excellent], Source={StaticResource Loc}}" Style="{StaticResource StrengthCaptionStyle}" FontWeight="{Binding CheckStrength, Converter={StaticResource PasswordStrengthLabelFontWeightConverter}, ConverterParameter=Excellent}" Foreground="{Binding CheckStrength, Converter={StaticResource PasswordStrengthBrushConverter}, ConverterParameter=Excellent}" />
+                    </Grid>
+                    <TextBlock Text="{Binding CheckSummary}" Style="{StaticResource SecondaryTextStyle}" TextWrapping="Wrap" />
+                    <TextBlock Text="{Binding CheckEntropyLabel}" Style="{StaticResource CaptionTextStyle}" TextWrapping="Wrap" />
+                    <TextBlock Text="{Binding CheckCrackTimeLabel}" Style="{StaticResource CaptionTextStyle}" TextWrapping="Wrap" />
+                    <TextBlock
+                        Text="{Binding CheckVaultLine}"
+                        Style="{StaticResource CaptionTextStyle}"
+                        TextWrapping="Wrap" />
+                </StackPanel>
+            </Border>
+
+            <Border
+                Style="{StaticResource CardBorderStyle}"
+                Visibility="{Binding HasCheckSecret, Converter={StaticResource BoolToVisibilityConverter}}">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="{Binding [CheckFindingsTitle], Source={StaticResource Loc}}" Style="{StaticResource CardTitleStyle}" />
+                    <ItemsControl ItemsSource="{Binding CheckFindings}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}" TextWrapping="Wrap" Padding="0,6" Style="{StaticResource SecondaryTextStyle}" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <TextBlock
+                        Text="{Binding [CheckNextTitle], Source={StaticResource Loc}}"
+                        Style="{StaticResource CardTitleStyle}" />
+                    <ItemsControl ItemsSource="{Binding CheckNextSteps}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}" TextWrapping="Wrap" Padding="0,6" Style="{StaticResource SecondaryTextStyle}" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource CardBorderStyle}">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="{Binding [CheckTipsTitle], Source={StaticResource Loc}}" Style="{StaticResource CardTitleStyle}" />
+                    <ItemsControl ItemsSource="{Binding CheckTips}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding}" TextWrapping="Wrap" Padding="0,6" Style="{StaticResource SecondaryTextStyle}" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+            </views:FluidCardPanel>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

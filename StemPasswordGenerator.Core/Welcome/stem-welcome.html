@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="{{Lang}}">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{WelcomePageTitle}}</title>
+  <style>
+    :root {
+      --bg: #0c1218;
+      --bg-elev: #141c26;
+      --line: rgba(232, 238, 247, 0.1);
+      --text: #e8eef7;
+      --muted: #9aa8bc;
+      --green: #6ccb5f;
+      --green-dim: rgba(108, 203, 95, 0.14);
+      --accent: #7ad4ff;
+      --card: #171f2a;
+      --shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; background: var(--bg); color: var(--text); }
+    body {
+      font: 16px/1.55 "Segoe UI", "Segoe UI Variable", system-ui, sans-serif;
+      min-height: 100vh;
+    }
+    .sky {
+      position: fixed; inset: 0; pointer-events: none;
+      background:
+        radial-gradient(900px 420px at 12% -10%, rgba(108, 203, 95, 0.18), transparent 60%),
+        radial-gradient(700px 380px at 100% 0%, rgba(122, 212, 255, 0.12), transparent 55%);
+    }
+    main {
+      position: relative;
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+    }
+    header {
+      display: flex; align-items: center; gap: 16px; margin-bottom: 36px;
+    }
+    header img {
+      width: 56px; height: 56px; border-radius: 14px;
+      box-shadow: var(--shadow);
+    }
+    .kicker {
+      color: var(--green);
+      font-size: 12px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      font-weight: 700;
+      margin: 0 0 4px;
+    }
+    h1 { font-size: clamp(28px, 4vw, 42px); line-height: 1.15; margin: 0 0 12px; letter-spacing: -0.03em; }
+    .lead { color: var(--muted); font-size: 18px; max-width: 40rem; margin: 0; }
+    .banner {
+      margin: 28px 0 40px;
+      padding: 16px 18px;
+      border: 1px solid rgba(108, 203, 95, 0.35);
+      background: var(--green-dim);
+      border-radius: 16px;
+      display: flex; gap: 12px; align-items: flex-start;
+    }
+    .dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: var(--green); margin-top: 7px; flex: none;
+      box-shadow: 0 0 0 6px rgba(108, 203, 95, 0.16);
+    }
+    .banner p { margin: 0; font-weight: 600; }
+    h2 { font-size: 20px; margin: 0 0 14px; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 14px;
+      margin-bottom: 36px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px 18px 16px;
+      box-shadow: var(--shadow);
+    }
+    .card h3 { margin: 0 0 8px; font-size: 16px; }
+    .card p, .how p, .step p { margin: 0; color: var(--muted); }
+    .how {
+      background: var(--bg-elev);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 22px;
+      margin-bottom: 36px;
+    }
+    .steps { display: grid; gap: 12px; }
+    .step {
+      display: grid;
+      grid-template-columns: 42px 1fr;
+      gap: 14px;
+      align-items: start;
+      padding: 14px;
+      border-radius: 16px;
+      background: var(--card);
+      border: 1px solid var(--line);
+    }
+    .num {
+      width: 42px; height: 42px; border-radius: 12px;
+      display: grid; place-items: center;
+      background: var(--green-dim); color: var(--green);
+      font-weight: 700;
+    }
+    .step h3 { margin: 0 0 4px; font-size: 16px; }
+    footer {
+      margin-top: 40px;
+      color: var(--muted);
+      font-size: 14px;
+      border-top: 1px solid var(--line);
+      padding-top: 18px;
+    }
+  </style>
+</head>
+<body>
+  <div class="sky"></div>
+  <main>
+    <header>
+      <img src="{{IconSrc}}" alt="" width="56" height="56" />
+      <div>
+        <p class="kicker">{{WelcomeKicker}}</p>
+        <strong>{{WelcomeBrand}}</strong>
+      </div>
+    </header>
+    <h1>{{WelcomeHero}}</h1>
+    <p class="lead">{{WelcomeLead}}</p>
+    <div class="banner">
+      <span class="dot"></span>
+      <p>{{WelcomeReady}}</p>
+    </div>
+    <h2>{{WelcomeWhatTitle}}</h2>
+    <div class="grid">
+      <article class="card">
+        <h3>{{WelcomeWhat1Title}}</h3>
+        <p>{{WelcomeWhat1Body}}</p>
+      </article>
+      <article class="card">
+        <h3>{{WelcomeWhat2Title}}</h3>
+        <p>{{WelcomeWhat2Body}}</p>
+      </article>
+      <article class="card">
+        <h3>{{WelcomeWhat3Title}}</h3>
+        <p>{{WelcomeWhat3Body}}</p>
+      </article>
+    </div>
+    <section class="how">
+      <h2>{{WelcomeHowTitle}}</h2>
+      <p>{{WelcomeHowBody}}</p>
+    </section>
+    <h2>{{WelcomeStepsTitle}}</h2>
+    <div class="steps">
+      <article class="step">
+        <div class="num">1</div>
+        <div>
+          <h3>{{WelcomeStep1Title}}</h3>
+          <p>{{WelcomeStep1Body}}</p>
+        </div>
+      </article>
+      <article class="step">
+        <div class="num">2</div>
+        <div>
+          <h3>{{WelcomeStep2Title}}</h3>
+          <p>{{WelcomeStep2Body}}</p>
+        </div>
+      </article>
+      <article class="step">
+        <div class="num">3</div>
+        <div>
+          <h3>{{WelcomeStep3Title}}</h3>
+          <p>{{WelcomeStep3Body}}</p>
+        </div>
+      </article>
+      <article class="step">
+        <div class="num">4</div>
+        <div>
+          <h3>{{WelcomeStep4Title}}</h3>
+          <p>{{WelcomeStep4Body}}</p>
+        </div>
+      </article>
+    </div>
+    <footer>
+      <p>{{WelcomeLocalBody}}</p>
+      <p>{{WelcomeDone}}</p>
+    </footer>
+  </main>
+</body>
+</html>
